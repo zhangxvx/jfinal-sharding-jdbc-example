@@ -1,6 +1,5 @@
 # Jfinal使用Sharding-JDBC学习笔记
 
-***
 
 ## 参考
 
@@ -18,13 +17,12 @@
     <version>4.9.15</version>
 </dependency>
 <dependency>
-<groupId>org.apache.shardingsphere</groupId>
-<artifactId>sharding-jdbc-core</artifactId>
-<version>4.1.1</version>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>sharding-jdbc-core</artifactId>
+    <version>4.1.1</version>
 </dependency>
 ```
 
-***
 
 # 配置示例
 
@@ -54,6 +52,7 @@ CREATE TABLE `t_order_1` (
  `order_name` varchar(100) NOT NULL,
  PRIMARY KEY (`order_id`)
 ) ENGINE=InnoDB;
+
 -- 测试数据
 INSERT INTO `t_order`(`order_id`, `order_name`) VALUES (1, 'name1');
 INSERT INTO `t_order`(`order_id`, `order_name`) VALUES (2, 'name2');
@@ -69,11 +68,11 @@ INSERT INTO `t_order_0`(`order_id`, `order_name`) VALUES (2, 'name2');
 //数据分片——单库分表
 ShardDruidPlugin shardDruidPlugin=ShardPluginFactory.getShardTablePlugin();
 //数据分片——分库分表
-        ShardDruidPlugin shardDruidPlugin=ShardPluginFactory.getShardDatabasePlugin();
+ShardDruidPlugin shardDruidPlugin=ShardPluginFactory.getShardDatabasePlugin();
 //读写分离
-        MasterSlaveDruidPlugin shardDruidPlugin=ShardPluginFactory.getMasterSlavePlugin();
+MasterSlaveDruidPlugin shardDruidPlugin=ShardPluginFactory.getMasterSlavePlugin();
 //读写分离+数据分片
-        ShardDruidPlugin shardDruidPlugin=ShardPluginFactory.getMasterSlaveShardTablePlugin();
+ShardDruidPlugin shardDruidPlugin=ShardPluginFactory.getMasterSlaveShardTablePlugin();
 ```
 
 ### 配置插件
@@ -98,26 +97,23 @@ public void configPlugin(Plugins me) {
  * 数据分片，单库分表
  */
 public static ShardDruidPlugin getShardTablePlugin(){
-        DruidPlugin dp0=new DruidPlugin(AppConfig.config.get("jdbc.master.url"),AppConfig.config.get("jdbc.master.user"),AppConfig.config.get("jdbc.master.password"));
-        Map<String, DruidPlugin> druidPluginMap=new HashMap<>();
-        druidPluginMap.put("ds0",dp0);
+    DruidPlugin dp0=new DruidPlugin(AppConfig.config.get("jdbc.master.url"),AppConfig.config.get("jdbc.master.user"),AppConfig.config.get("jdbc.master.password"));
+    Map<String, DruidPlugin> druidPluginMap=new HashMap<>();
+    druidPluginMap.put("ds0",dp0);
 
-        ShardingRuleConfiguration shardingRuleConfig=new ShardingRuleConfiguration();
-        TableRuleConfiguration tableRuleConfig=new TableRuleConfiguration("t_order","ds0.t_order_${0..1}");
-        shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
+    ShardingRuleConfiguration shardingRuleConfig=new ShardingRuleConfiguration();
+    TableRuleConfiguration tableRuleConfig=new TableRuleConfiguration("t_order","ds0.t_order_${0..1}");
+    shardingRuleConfig.getTableRuleConfigs().add(tableRuleConfig);
 
-        StandardShardingStrategyConfiguration strategyConfiguration=new StandardShardingStrategyConfiguration("order_id",new PreciseModuloShardingTableAlgorithm(),new RangeModuloShardingTableAlgorithm());
-        shardingRuleConfig.setDefaultTableShardingStrategyConfig(strategyConfiguration);
+    StandardShardingStrategyConfiguration strategyConfiguration=new StandardShardingStrategyConfiguration("order_id",new PreciseModuloShardingTableAlgorithm(),new RangeModuloShardingTableAlgorithm());
+    shardingRuleConfig.setDefaultTableShardingStrategyConfig(strategyConfiguration);
 
-        Properties props=new Properties();
-        props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(),"true");
-        return new ShardDruidPlugin(shardingRuleConfig,druidPluginMap,props);
-        }
+    Properties props=new Properties();
+    props.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(),"true");
+    return new ShardDruidPlugin(shardingRuleConfig,druidPluginMap,props);
+}
 ```
 
-***
-
-# 知识
 
 # 一、数据分片
 
