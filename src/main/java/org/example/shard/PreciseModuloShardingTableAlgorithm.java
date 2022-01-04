@@ -9,8 +9,6 @@ public final class PreciseModuloShardingTableAlgorithm implements PreciseShardin
 
     @Override
     public String doSharding(final Collection<String> tableNames, final PreciseShardingValue<Integer> shardingValue) {
-        System.out.println("tableNames = " + tableNames);
-        System.out.println("shardingValue = " + shardingValue);
         for (String each : tableNames) {
             if (each.endsWith(Integer.toString(shardingValue.getValue() % 2))) {
                 System.out.println("each = " + each);
